@@ -10,9 +10,21 @@ body {
     height: 100vh;
 }
 
+.navbar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    position: fixed;
+    top: 0;
+}
+
 h1 {
     text-align: center;
     color: #333;
+    margin-top: 60px;
 }
 
 form {

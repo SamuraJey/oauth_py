@@ -7,8 +7,12 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    <div class="navbar">
+        <span>Logged in as: {{ user['first_name'] }} {{ user['last_name'] }}</span>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
     <h1>Bingo</h1>
-    <form method="POST">
+    <form method="POST" action="{{ url_for('bingo') }}">
         <label for="words">Введите слова через запятую:</label>
         <input type="text" id="words" name="words">
         <button type="submit">Создать</button>
