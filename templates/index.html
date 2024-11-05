@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bingo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Bingo</h1>
+    <form method="POST">
+        <label for="words">Введите слова через запятую:</label>
+        <input type="text" id="words" name="words">
+        <button type="submit">Создать</button>
+    </form>
+    {% if words_grid %}
+        <div id="bingo-grid">
+            {% for row in words_grid %}
+                <div class="row">
+                    {% for word in row %}
+                        <span class="word" onclick="markWord(this)">{{ word }}</span>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <script>
+        function markWord(element) {
+            element.classList.toggle('marked');
+            fetch('/mark_word', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'word=' + element.innerText
+            }).then(response => response.json())
+              .then(data => {
+                  if (!data.success) {
+                      alert('Ошибка при отметке слова');
+                  }
+              });
+        }
+    </script>
+</body>
+</html>
