@@ -7,7 +7,7 @@ dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 if os.path.exists(dotenv_path):
     load_dotenv(dotenv_path)
 
-PORT=os.environ.get('PORT', 8080)
+PORT = os.environ.get('PORT', 8080)
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY')
@@ -36,8 +36,18 @@ def index():
     return render_template('index.html', user=user)
 
 
+# @app.route('/login')
+# def login():
+#     redirect_uri = url_for('auth', _external=True)
+#     return oauth.vk.authorize_redirect(redirect_uri)
+
 @app.route('/login')
 def login():
+    return render_template('login.html')
+
+
+@app.route('/authorize')
+def authorize():
     redirect_uri = url_for('auth', _external=True)
     return oauth.vk.authorize_redirect(redirect_uri)
 
@@ -87,4 +97,4 @@ def mark_word():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=PORT, host='0.0.0.0')
+    app.run(debug=os.environ.get('DEBUG', False), port=PORT, host='0.0.0.0.')
