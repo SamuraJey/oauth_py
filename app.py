@@ -23,6 +23,7 @@ oauth.register(
     access_token_url='https://oauth.vk.com/access_token',
     access_token_params=None,
     refresh_token_url=None,
+    # redirect_uri='http://localhost:8080/auth/',
     redirect_uri=os.environ.get('REDIRECT_URI'),
     client_kwargs={'scope': 'email'}
 )
@@ -97,4 +98,4 @@ def mark_word():
 
 
 if __name__ == '__main__':
-    app.run(debug=os.environ.get('DEBUG', False), port=PORT, host='0.0.0.0.')
+    app.run(debug=os.environ.get('DEBUG', False), port=PORT, host='0.0.0.0')
