@@ -49,7 +49,8 @@ def login():
 
 @app.route('/authorize')
 def authorize():
-    redirect_uri = url_for('auth', _external=True)
+    redirect_uri = url_for('auth', _external=True, _scheme='https')
+    # print(redirect_uri)
     return oauth.vk.authorize_redirect(redirect_uri)
 
 

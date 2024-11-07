@@ -11,3 +11,4 @@ services:
     volumes:
       - ./web:/var/www/html
     restart: unless-stopped
+    pull_policy: always
