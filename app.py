@@ -23,7 +23,7 @@ oauth.register(
     access_token_url='https://oauth.vk.com/access_token',
     access_token_params=None,
     refresh_token_url=None,
-    redirect_uri='http://localhost/auth',
+    redirect_uri=os.environ.get('REDIRECT_URI'),
     client_kwargs={'scope': 'email'}
 )
 

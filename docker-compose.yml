@@ -1,0 +1,13 @@
+services:
+  web:
+    image: ghcr.io/samurajey/oauth_py:main
+    container_name: oauth_py
+    ports:
+      - "8080:8080"
+    environment:
+      - ENV_VAR_NAME=value
+    env_file:
+      - .env
+    volumes:
+      - ./web:/var/www/html
+    restart: unless-stopped
