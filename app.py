@@ -116,6 +116,9 @@ def mark_word():
     app.logger.info('Word marked: %s', word)
     return jsonify({'success': True})
 
+@app.route('/life')
+def life():
+    return render_template('life.html')
 
 if __name__ == '__main__':
     app.run(debug=os.environ.get('DEBUG', False), port=PORT, host='0.0.0.0')
