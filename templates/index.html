@@ -9,8 +9,8 @@
 <body>
     <div class="navbar">
         <span>Logged in as: {{ user['first_name'] }} {{ user['last_name'] }}</span>
-        <a href="{{ url_for('logout') }}">Logout</a>
         <a href="{{ url_for('life') }}">Game of Life</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
     </div>
     <h1>Bingo</h1>
     <form method="POST" action="{{ url_for('bingo') }}">

@@ -3,6 +3,7 @@ from logging.handlers import RotatingFileHandler
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session
 from authlib.integrations.flask_client import OAuth
 import os
+from functools import wraps
 from dotenv import load_dotenv
 
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
@@ -42,6 +43,16 @@ oauth.register(
     redirect_uri=os.environ.get('REDIRECT_URI'),
     client_kwargs={'scope': 'email'}
 )
+
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user' not in session:
+            app.logger.info('User not in session, redirecting to login')
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 @app.route('/')
@@ -116,9 +127,11 @@ def mark_word():
     app.logger.info('Word marked: %s', word)
     return jsonify({'success': True})
 
+
 @app.route('/life')
 def life():
     return render_template('life.html')
+
 
 if __name__ == '__main__':
     app.run(debug=os.environ.get('DEBUG', False), port=PORT, host='0.0.0.0')
