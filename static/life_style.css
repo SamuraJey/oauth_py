@@ -66,3 +66,32 @@ button
     padding: 20px; /* Отступы вокруг контейнера */
     text-align: center; /* Выравнивание текста по центру */
   }
+
+  .navbar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    position: fixed;
+    top: 0;
+}
+
+.navbar span {
+    color: white;
+    font-size: 18px;
+}
+
+.navbar a {
+    color: white;
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.navbar a:hover {
+    background-color: #ddd;
+    color: black;
+}

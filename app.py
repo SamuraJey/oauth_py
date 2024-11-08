@@ -60,7 +60,7 @@ def index():
     if 'user' not in session:
         app.logger.info('User not in session, redirecting to login')
         return redirect(url_for('login'))
-    user = session['user']
+    user = session['user'] if 'user' in session else None
     app.logger.info('Rendering index for user: %s', user)
     return render_template('index.html', user=user)
 
@@ -86,6 +86,7 @@ def auth():
     user = oauth.vk.get('https://api.vk.com/method/users.get', params={'access_token': token['access_token'], 'v': '5.131'}).json()
     session['user'] = user['response'][0]
     app.logger.info('User authenticated: %s', user['response'][0])
+    app.logger.info('session: %s', session)
     return redirect('/')
 
 
@@ -111,11 +112,11 @@ def bingo():
         rows = int(len(words)**0.5) + 1
         cols = (len(words) + rows - 1) // rows
         words_grid = [words[i:i+cols] for i in range(0, len(words), cols)]
-        app.logger.info('Bingo words grid created')
+        app.logger.info('Bingo words grid created, rows: %s, cols: %s, by user %s', rows, cols, session['user'])
     else:
         words_grid = []
 
-    return render_template('index.html', words_grid=words_grid, user=session['user'])
+    return render_template('index.html', words_grid=words_grid, user=session['user'] if 'user' in session else None)
 
 
 @app.route('/mark_word', methods=['POST'])
@@ -124,13 +125,18 @@ def mark_word():
         app.logger.info('User not in session, redirecting to login')
         return redirect(url_for('login'))
     word = request.form['word']
-    app.logger.info('Word marked: %s', word)
+    app.logger.info('Word marked: %s, by user: %s', word, session['user'] if 'user' in session else None)
     return jsonify({'success': True})
 
 
 @app.route('/life')
 def life():
-    return render_template('life.html')
+    if 'user' not in session:
+        app.logger.info('User not in session, redirecting to login')
+        return redirect(url_for('login'))
+    user = session['user'] if 'user' in session else None
+    app.logger.info('Rendering life for user: %s', user)
+    return render_template('life.html', user=user)
 
 
 if __name__ == '__main__':
