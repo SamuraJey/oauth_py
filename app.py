@@ -103,12 +103,13 @@ def bingo():
         app.logger.info('User not in session, redirecting to login')
         return redirect(url_for('login'))
     words = []
+    user = session['user'] if 'user' in session else None
     if request.method == 'POST':
         words_str = request.form['words']
         words = [word.strip() for word in words_str.split(',') if word.strip()]
         if len(words) < 1:
-            app.logger.warning('No words entered for bingo')
-            return render_template('index.html', error="Введите хотя бы одно слово")
+            app.logger.warning('No words entered for bingo by user %s', session['user'])
+            return render_template('index.html', error="Введите хотя бы одно слово", user=user)
         rows = int(len(words)**0.5) + 1
         cols = (len(words) + rows - 1) // rows
         words_grid = [words[i:i+cols] for i in range(0, len(words), cols)]
@@ -116,7 +117,7 @@ def bingo():
     else:
         words_grid = []
 
-    return render_template('index.html', words_grid=words_grid, user=session['user'] if 'user' in session else None)
+    return render_template('index.html', words_grid=words_grid, user=user)
 
 
 @app.route('/mark_word', methods=['POST'])
@@ -124,8 +125,8 @@ def mark_word():
     if 'user' not in session:
         app.logger.info('User not in session, redirecting to login')
         return redirect(url_for('login'))
-    word = request.form['word']
-    app.logger.info('Word marked: %s, by user: %s', word, session['user'] if 'user' in session else None)
+    # word = request.form['word']
+    # app.logger.info('Word marked: %s, by user: %s', word, session['user'] if 'user' in session else None)
     return jsonify({'success': True})
 
 
@@ -138,6 +139,18 @@ def life():
     app.logger.info('Rendering life for user: %s', user)
     return render_template('life.html', user=user)
 
+# Список для хранения заметок
+notes = []
+
+@app.route('/notes', methods=['GET', 'POST'])
+@login_required
+def notes_view():
+    if request.method == 'POST':
+        note = request.form['note']
+        user = session['user']
+        notes.append({'user': user, 'note': note})
+        app.logger.info('Note added by user: %s', user)
+    return render_template('notes.html', notes=notes, user=session['user'])
 
 if __name__ == '__main__':
     app.run(debug=os.environ.get('DEBUG', False), port=PORT, host='0.0.0.0')

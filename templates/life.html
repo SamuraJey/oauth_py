@@ -11,7 +11,8 @@
     <div class="navbar">
         <span>Logged in as: {{ user['first_name'] }} {{ user['last_name'] }}</span>
         <div>
-            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('life') }}">Game of Life</a>
+            <a href="{{ url_for('notes_view') }}">Notes</a>
             <a href="{{ url_for('logout') }}">Logout</a>
         </div>
     </div>
