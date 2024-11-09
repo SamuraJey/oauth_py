@@ -14,7 +14,7 @@ PORT = os.environ.get('PORT', 8080)
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY')
-
+app.debug = os.environ.get('DEBUG', False)
 # Configure logging
 if not os.path.exists('logs'):
     os.mkdir('logs')
