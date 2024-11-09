@@ -139,8 +139,10 @@ def life():
     app.logger.info('Rendering life for user: %s', user)
     return render_template('life.html', user=user)
 
+
 # Список для хранения заметок
 notes = []
+
 
 @app.route('/notes', methods=['GET', 'POST'])
 @login_required
@@ -152,5 +154,13 @@ def notes_view():
         app.logger.info('Note added by user: %s', user)
     return render_template('notes.html', notes=notes, user=session['user'])
 
+
 if __name__ == '__main__':
-    app.run(debug=os.environ.get('DEBUG', False), port=PORT, host='0.0.0.0')
+    debug_state = os.environ.get('DEBUG', 'False')
+    if debug_state == 'False':
+        app.debug = False
+    elif debug_state == 'True':
+        app.debug = True
+    else:
+        app.debug = False
+    app.run(port=PORT, host='0.0.0.0')
