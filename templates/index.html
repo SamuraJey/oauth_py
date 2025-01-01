@@ -9,7 +9,11 @@
 <body>
     <div class="navbar">
         <span>Logged in as: {{ user['first_name'] }} {{ user['last_name'] }}</span>
-        <a href="{{ url_for('logout') }}">Logout</a>
+        <div>
+            <a href="{{ url_for('life') }}">Game of Life</a>
+            <a href="{{ url_for('notes_view') }}">Notes</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
     </div>
     <h1>Bingo</h1>
     <form method="POST" action="{{ url_for('bingo') }}">
@@ -31,18 +35,6 @@
     <script>
         function markWord(element) {
             element.classList.toggle('marked');
-            fetch('/mark_word', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'word=' + element.innerText
-            }).then(response => response.json())
-              .then(data => {
-                  if (!data.success) {
-                      alert('Ошибка при отметке слова');
-                  }
-              });
         }
     </script>
 </body>

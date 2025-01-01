@@ -3,12 +3,21 @@ services:
     image: ghcr.io/samurajey/oauth_py:main
     container_name: oauth_py
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     environment:
       - ENV_VAR_NAME=value
     env_file:
       - .env
     volumes:
       - ./web:/var/www/html
+      - ./logs:/usr/src/app/logs
     restart: unless-stopped
     pull_policy: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.30'  # Ограничение по CPU (например, 50% одного CPU)
+          memory: '256M'  # Ограничение по памяти (например, 512 MB)
+        reservations:
+          cpus: '0.05'  # Резервирование CPU (например, 25% одного CPU)
+          memory: '64M'  # Резервирование памяти (например, 256 MB)
