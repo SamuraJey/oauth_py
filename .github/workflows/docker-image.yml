@@ -54,8 +54,8 @@ jobs:
           # <https://stackoverflow.com/a/70447517>
           run: |
             install -m 600 -D /dev/null ~/.ssh/id_rsa
-            echo "${{ secrets.SSH_PRIVATE_KEY }}" >> ~/.ssh/id_rsa
-            ssh-keyscan -H ${{ env.HOST }} > ~/.ssh/known_hosts
+            echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+            ssh-keyscan -p ${{ env.PORT }} -H ${{ env.HOST }} > ~/.ssh/known_hosts
         - name: create dotenv
           run: echo ${{ env.DOT_ENV }} | base64 --decode > .env
         - name: copy dotenv file
