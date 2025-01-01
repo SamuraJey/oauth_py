@@ -59,9 +59,9 @@ jobs:
         - name: create dotenv
           run: echo "${{ env.DOT_ENV }}" | base64 --decode > .env
         - name: copy dotenv file
-          run: scp -P ${{ env.PORT }} .env ${{ env.SSH_USER }}@${{ env.HOST }}:.env
+          run: scp -i ~/.ssh/id_ed25519 -P ${{ env.PORT }} .env ${{ env.SSH_USER }}@${{ env.HOST }}:.env
         - name: connect and pull
-          run: ssh ${{ env.SSH_USER }}@${{ env.HOST }} -p ${{ env.PORT }} "docker compose pull && docker compose up -d && exit"
+          run: ssh -i ~/.ssh/id_ed25519 ${{ env.SSH_USER }}@${{ env.HOST }} -p ${{ env.PORT }} "docker compose pull && docker compose up -d && exit"
         - name: cleanup keys
           if: always()
           run: rm -rf ~/.ssh .env
