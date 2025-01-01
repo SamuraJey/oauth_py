@@ -57,7 +57,7 @@ jobs:
             echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
             ssh-keyscan -p ${{ env.PORT }} -H ${{ env.HOST }} > ~/.ssh/known_hosts
         - name: create dotenv
-          run: echo ${{ env.DOT_ENV }} | base64 --decode > .env
+          run: echo "${{ env.DOT_ENV }}" | base64 --decode > .env
         - name: copy dotenv file
           run: scp -P ${{ env.PORT }} .env ${{ env.SSH_USER }}@${{ env.HOST }}:.env
         - name: connect and pull
