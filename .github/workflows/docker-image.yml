@@ -60,6 +60,8 @@ jobs:
           run: echo "${{ env.DOT_ENV }}" | base64 --decode > .env
         - name: copy dotenv file
           run: scp -i ~/.ssh/id_ed25519 -P ${{ env.PORT }} .env ${{ env.SSH_USER }}@${{ env.HOST }}:.env
+        - name: copy dotenv file
+          run: scp -i ~/.ssh/id_ed25519 -P ${{ env.PORT }} docker-compose.yml ${{ env.SSH_USER }}@${{ env.HOST }}:docker-compose.yml
         - name: connect and pull
           run: ssh -i ~/.ssh/id_ed25519 ${{ env.SSH_USER }}@${{ env.HOST }} -p ${{ env.PORT }} "docker compose pull && docker compose up -d && exit"
         - name: cleanup keys
