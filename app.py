@@ -169,6 +169,8 @@ if __name__ == '__main__':
         app.debug = False
     elif debug_state == 'True':
         app.debug = True
+        app.run(port=PORT, host='0.0.0.0')
     else:
+        from waitress import serve
         app.debug = False
-    app.run(port=PORT, host='0.0.0.0')
+        serve(app, port=PORT, host='0.0.0.0')
