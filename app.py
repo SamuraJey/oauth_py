@@ -5,6 +5,7 @@ from authlib.integrations.flask_client import OAuth
 import os
 from functools import wraps
 from dotenv import load_dotenv
+import pycouchdb
 
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 if os.path.exists(dotenv_path):
@@ -45,10 +46,18 @@ oauth.register(
 )
 
 
+couchdb_server = pycouchdb.Server(os.environ.get('COUCHDB_URL'))
+db = couchdb_server.database('notes')
+
+DEFAULT_USER = 'Anonymous'
+
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user' not in session:
+            if app.debug is True:
+                return f(*args, **kwargs)
             app.logger.info('User not in session, redirecting to login')
             return redirect(url_for('login'))
         return f(*args, **kwargs)
@@ -56,10 +65,8 @@ def login_required(f):
 
 
 @app.route('/')
+@login_required
 def index():
-    if 'user' not in session:
-        app.logger.info('User not in session, redirecting to login')
-        return redirect(url_for('login'))
     user = session['user'] if 'user' in session else None
     app.logger.info('Rendering index for user: %s', user)
     return render_template('index.html', user=user)
@@ -98,12 +105,10 @@ def logout():
 
 
 @app.route('/bingo', methods=['GET', 'POST'])
+@login_required
 def bingo():
-    if 'user' not in session:
-        app.logger.info('User not in session, redirecting to login')
-        return redirect(url_for('login'))
     words = []
-    user = session['user'] if 'user' in session else None
+    user = session['user'] if 'user' in session else DEFAULT_USER
     if request.method == 'POST':
         words_str = request.form['words']
         words = [word.strip() for word in words_str.split(',') if word.strip()]
@@ -121,38 +126,41 @@ def bingo():
 
 
 @app.route('/mark_word', methods=['POST'])
+@login_required
 def mark_word():
-    if 'user' not in session:
-        app.logger.info('User not in session, redirecting to login')
-        return redirect(url_for('login'))
-    # word = request.form['word']
-    # app.logger.info('Word marked: %s, by user: %s', word, session['user'] if 'user' in session else None)
     return jsonify({'success': True})
 
 
 @app.route('/life')
+@login_required
 def life():
-    if 'user' not in session:
-        app.logger.info('User not in session, redirecting to login')
-        return redirect(url_for('login'))
-    user = session['user'] if 'user' in session else None
+    user = session['user'] if 'user' in session else DEFAULT_USER
     app.logger.info('Rendering life for user: %s', user)
     return render_template('life.html', user=user)
-
-
-# Список для хранения заметок
-notes = []
 
 
 @app.route('/notes', methods=['GET', 'POST'])
 @login_required
 def notes_view():
+    user = session['user'] if 'user' in session else DEFAULT_USER
     if request.method == 'POST':
         note = request.form['note']
-        user = session['user']
-        notes.append({'user': user, 'note': note})
+        db.save({'user': user, 'note': note})
         app.logger.info('Note added by user: %s', user)
-    return render_template('notes.html', notes=notes, user=session['user'])
+        app.logger.debug('Note added: %s', note)
+        return redirect(url_for('notes_view'))  # Redirect to avoid resubmission
+
+    page = int(request.args.get('page', 1))
+    per_page = 10
+    skip = (page - 1) * per_page
+
+    notes = db.query('notes/all_notes', skip=skip, limit=per_page, reduce=False)
+    total_notes = db.query('notes/all_notes', reduce=True, as_list=True)[0]['value']
+    notes_list = [{'user': note['value']['user'], 'note': note['value']['note']} for note in notes]
+
+    total_pages = (total_notes + per_page - 1) // per_page
+
+    return render_template('notes.html', notes=notes_list, user=user, page=page, total_pages=total_pages)
 
 
 if __name__ == '__main__':
