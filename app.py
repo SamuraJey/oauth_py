@@ -4,22 +4,22 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for, s
 from authlib.integrations.flask_client import OAuth
 import os
 from functools import wraps
-from dotenv import load_dotenv
 import pycouchdb
+from dotenv_load import SiteSettings
 
-dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
-if os.path.exists(dotenv_path):
-    load_dotenv(dotenv_path)
 
-PORT = os.environ.get('PORT', 8080)
+settings = SiteSettings()
+
+PORT = settings.port
+DEFAULT_USER = {'first_name': 'Anon', 'last_name': 'Anon'}
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('FLASK_SECRET_KEY')
-app.debug = os.environ.get('DEBUG', False)
+app.secret_key = settings.flask_secret_key
+app.debug = settings.debug
 # Configure logging
 if not os.path.exists('logs'):
     os.mkdir('logs')
-file_handler = RotatingFileHandler('logs/app.log', maxBytes=10240, backupCount=10)
+file_handler = RotatingFileHandler('logs/app.log', maxBytes=10240, backupCount=3)
 file_handler.setFormatter(logging.Formatter(
     '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
 ))
@@ -33,23 +33,21 @@ app.logger.info('App startup')
 oauth = OAuth(app)
 oauth.register(
     name='vk',
-    client_id=os.environ.get('VK_CLIENT_ID'),
-    client_secret=os.environ.get('VK_CLIENT_SECRET'),
+    client_id=settings.vk_client_id,
+    client_secret=settings.vk_client_secret,
     authorize_url='https://oauth.vk.com/authorize',
     authorize_params=None,
     access_token_url='https://oauth.vk.com/access_token',
     access_token_params=None,
-    refresh_token_url=None,
+    refresh_token_url=None,  # Refresh token is not implemented
     # redirect_uri='http://localhost:8080/auth/',
-    redirect_uri=os.environ.get('REDIRECT_URI'),
+    redirect_uri=settings.redirect_uri,
     client_kwargs={'scope': 'email'}
 )
 
 
-couchdb_server = pycouchdb.Server(os.environ.get('COUCHDB_URL'))
+couchdb_server = pycouchdb.Server(settings.couchdb_url)
 db = couchdb_server.database('notes')
-
-DEFAULT_USER = 'Anonymous'
 
 
 def login_required(f):
@@ -67,7 +65,7 @@ def login_required(f):
 @app.route('/')
 @login_required
 def index():
-    user = session['user'] if 'user' in session else None
+    user = session['user'] if 'user' in session else DEFAULT_USER
     app.logger.info('Rendering index for user: %s', user)
     return render_template('index.html', user=user)
 
@@ -113,12 +111,12 @@ def bingo():
         words_str = request.form['words']
         words = [word.strip() for word in words_str.split(',') if word.strip()]
         if len(words) < 1:
-            app.logger.warning('No words entered for bingo by user %s', session['user'])
+            app.logger.warning('No words entered for bingo by user %s', user)
             return render_template('index.html', error="Введите хотя бы одно слово", user=user)
         rows = int(len(words)**0.5) + 1
         cols = (len(words) + rows - 1) // rows
         words_grid = [words[i:i+cols] for i in range(0, len(words), cols)]
-        app.logger.info('Bingo words grid created, rows: %s, cols: %s, by user %s', rows, cols, session['user'])
+        app.logger.info('Bingo words grid created, rows: %s, cols: %s, by user %s', rows, cols, user)
     else:
         words_grid = []
 
@@ -145,7 +143,7 @@ def notes_view():
     user = session['user'] if 'user' in session else DEFAULT_USER
     if request.method == 'POST':
         note = request.form['note']
-        db.save({'user': user, 'note': note})
+        db.save({'user': f"{user.get('first_name', "")} {user.get('last_name', '')}", 'note': note})  # TODO Maybe save json in user, instead of string
         app.logger.info('Note added by user: %s', user)
         app.logger.debug('Note added: %s', note)
         return redirect(url_for('notes_view'))  # Redirect to avoid resubmission
@@ -164,13 +162,8 @@ def notes_view():
 
 
 if __name__ == '__main__':
-    debug_state = os.environ.get('DEBUG', 'False')
-    if debug_state == 'False':
-        app.debug = False
-    elif debug_state == 'True':
-        app.debug = True
+    if app.debug is True:
         app.run(port=PORT, host='0.0.0.0')
     else:
         from waitress import serve
-        app.debug = False
-        serve(app, port=PORT, host='0.0.0.0')
+        serve(app, port=PORT, host='0.0.0.0', _quiet=False)
