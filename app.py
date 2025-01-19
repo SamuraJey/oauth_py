@@ -24,7 +24,7 @@ def create_app(settings: SiteSettings) -> MyFlask:
 
     # OAuth configuration
     app.oauth = get_oauth(app, settings)
-    app.db = get_db(settings)
+    app.db = get_db(settings, 'notes')
 
     # Register blueprints
     from routes import auth, game, index, notes
