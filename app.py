@@ -6,7 +6,6 @@ from database import get_db
 from dotenv_load import SiteSettings
 from logger import setup_logger
 from oauth import get_oauth
-from routes import index
 
 
 class MyFlask(Flask):
@@ -28,7 +27,7 @@ def create_app(settings: SiteSettings) -> MyFlask:
     app.db = get_db(settings)
 
     # Register blueprints
-    from routes import auth, game, notes
+    from routes import auth, game, index, notes
     app.register_blueprint(auth.bp)
     app.register_blueprint(notes.bp)
     app.register_blueprint(game.bp)
