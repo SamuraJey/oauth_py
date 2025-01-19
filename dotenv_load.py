@@ -9,7 +9,7 @@ class SiteSettings(Settings):
     flask_secret_key: str
     vk_client_id: str
     vk_client_secret: str
-    port: int | str = 8080
-    debug: bool | None = False
+    port: int = 8080
+    debug: bool = False
     redirect_uri: str
     couchdb_url: str

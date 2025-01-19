@@ -10,32 +10,10 @@
     <div class="navbar">
         <span>Logged in as: {{ user['first_name'] }} {{ user['last_name'] }}</span>
         <div>
-            <a href="{{ url_for('life') }}">Game of Life</a>
-            <a href="{{ url_for('notes_view') }}">Notes</a>
-            <a href="{{ url_for('logout') }}">Logout</a>
+            <a href="{{ url_for('game.life') }}">Game of Life</a>
+            <a href="{{ url_for('notes.notes_view') }}">Notes</a>
+            <a href="{{ url_for('auth.logout') }}">Logout</a>
         </div>
     </div>
-    <h1>Bingo</h1>
-    <form method="POST" action="{{ url_for('bingo') }}">
-        <label for="words">Введите слова через запятую:</label>
-        <input type="text" id="words" name="words">
-        <button type="submit">Создать</button>
-    </form>
-    {% if words_grid %}
-        <div id="bingo-grid">
-            {% for row in words_grid %}
-                <div class="row">
-                    {% for word in row %}
-                        <span class="word" onclick="markWord(this)">{{ word }}</span>
-                    {% endfor %}
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-    <script>
-        function markWord(element) {
-            element.classList.toggle('marked');
-        }
-    </script>
 </body>
 </html>
