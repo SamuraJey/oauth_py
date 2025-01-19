@@ -1,6 +1,8 @@
 from typing import cast
-from flask import current_app
+
 import pycouchdb
+import requests
+from flask import current_app
 
 from dotenv_load import SiteSettings
 
@@ -17,25 +19,25 @@ def get_url(settings: SiteSettings) -> str:
 # curl -X PUT http://adm:pass@127.0.0.1:5984/_replicator
 
 
-def init_db(couch_db_server: pycouchdb.Server) -> None:
+def create_system_dbs(settings: SiteSettings) -> None:
+    base_url = get_url(settings)
+    system_dbs = ['_users', '_replicator']
 
-    try:
-        couch_db_server.create('_users')
-    except pycouchdb.exceptions.Conflict:
-        current_app.logger.info('Database _users already exists')
-        pass
+    for db in system_dbs:
+        response = requests.put(f'{base_url}/{db}')
+        if response.status_code in (201, 202):
+            current_app.logger.info(f"Created system database: {db}")
 
-    try:
-        couch_db_server.create('_replicator')
-    except pycouchdb.exceptions.Conflict:
-        current_app.logger.info('Database _replicator already exists')
-        pass
+        elif response.status_code == 412:
+            current_app.logger.info(f"System database {db} already exists")
+        else:
+            current_app.logger.error(f"Failed to create system database {db}: {response.text}")
 
 
 def get_db(settings: SiteSettings, database_name: str) -> pycouchdb.client.Database:
     full_url = get_url(settings)
     couchdb_server = pycouchdb.Server(full_url)
-    init_db(couchdb_server)
+    create_system_dbs(settings)
     db = None
     try:
         db = couchdb_server.database(database_name)
