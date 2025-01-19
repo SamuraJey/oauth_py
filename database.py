@@ -65,6 +65,7 @@ def get_db(settings: SiteSettings, database_name: str) -> pycouchdb.client.Datab
     full_url = get_url(settings)
     couchdb_server = pycouchdb.Server(full_url)
     create_system_dbs(settings)
+    add_design_document(settings, database_name)
     db = None
     try:
         db = couchdb_server.database(database_name)
