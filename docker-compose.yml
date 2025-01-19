@@ -1,6 +1,6 @@
 services:
   web:
-    image: ghcr.io/samurajey/oauth_py:main
+    image: ghcr.io/samurajey/oauth_py:pr-2
     container_name: oauth_py
     ports:
       - "127.0.0.1:8080:8080"
