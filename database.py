@@ -26,12 +26,11 @@ def create_system_dbs(settings: SiteSettings) -> None:
     for db in system_dbs:
         response = requests.put(f'{base_url}/{db}')
         if response.status_code in (201, 202):
-            current_app.logger.info(f"Created system database: {db}")
-
+            print(f"Created system database {db}")
         elif response.status_code == 412:
-            current_app.logger.info(f"System database {db} already exists")
+            print(f"System database {db} already exists")
         else:
-            current_app.logger.error(f"Failed to create system database {db}: {response.text}")
+            print(f"Failed to create system database {db}: {response.status_code}")
 
 
 def get_db(settings: SiteSettings, database_name: str) -> pycouchdb.client.Database:
