@@ -18,6 +18,34 @@ def get_url(settings: SiteSettings) -> str:
 
 # curl -X PUT http://adm:pass@127.0.0.1:5984/_replicator
 
+import requests
+import json
+
+def add_design_document(settings: SiteSettings, db_name: str) -> None:
+    base_url = get_url(settings)
+    # db_name = 'notes'
+    design_doc = {
+        "_id": "_design/notes",
+        "views": {
+            "all_notes": {
+                "map": "function(doc) { if (doc.user && doc.note) { emit(doc._id, {'user':doc.user, 'note':doc.note}); } }",
+                "reduce": "_count"
+            }
+        }
+    }
+    
+    url = f'{base_url}/{db_name}/_design/notes'
+    headers = {'Content-Type': 'application/json'}
+    
+    response = requests.put(url, headers=headers, data=json.dumps(design_doc))
+    
+    if response.status_code in (201, 202):
+        print("Design document added successfully.")
+    elif response.status_code == 409 or response.status_code == 412:
+        print("Design document already exists.")
+    else:
+        print(f"Failed to add design document: {response.status_code} - {response.text}")
+
 
 def create_system_dbs(settings: SiteSettings) -> None:
     base_url = get_url(settings)
