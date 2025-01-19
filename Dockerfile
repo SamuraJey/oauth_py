@@ -7,4 +7,4 @@ RUN pip install --upgrade pip && \
 	poetry install
 
 EXPOSE 8080
-CMD ["python", "app.py"]
+CMD ["poetry", "run", "python", "app.py"]
