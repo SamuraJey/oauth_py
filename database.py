@@ -2,7 +2,7 @@ from typing import cast
 
 import pycouchdb
 import requests
-from flask import current_app
+from pycouchdb import exceptions
 
 from dotenv_load import SiteSettings
 
@@ -40,6 +40,6 @@ def get_db(settings: SiteSettings, database_name: str) -> pycouchdb.client.Datab
     db = None
     try:
         db = couchdb_server.database(database_name)
-    except pycouchdb.exceptions.NotFound:
+    except exceptions.NotFound:
         db = couchdb_server.create(database_name)
     return cast(pycouchdb.client.Database, db)
