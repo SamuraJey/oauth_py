@@ -24,7 +24,13 @@ def notes_view():
     skip = (page - 1) * per_page
 
     notes = current_app.db.query('notes/all_notes', skip=skip, limit=per_page, reduce=False)
-    total_notes = current_app.db.query('notes/all_notes', reduce=True, as_list=True)[0]['value']
+
+    total_notes = current_app.db.query('notes/all_notes', reduce=True, as_list=True)
+    if len(total_notes) > 0:
+        total_notes = total_notes[0]['value']
+    else:
+        total_notes = 0
+
     notes_list = [{'user': note['value']['user'], 'note': note['value']['note']} for note in notes]
 
     total_pages = (total_notes + per_page - 1) // per_page
