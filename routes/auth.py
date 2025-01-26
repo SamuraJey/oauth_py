@@ -26,11 +26,11 @@ def auth():
                                     params={'access_token': token['access_token'], 'v': '5.131'}).json()
     session['user'] = user['response'][0]
     current_app.logger.info('User authenticated: %s', user['response'][0])
-    return redirect(url_for('bingo.index'))
+    return redirect(url_for('index.index'))
 
 
 @bp.route('/logout')
 def logout():
     user = session.pop('user', None)
     current_app.logger.info('User logged out: %s', user)
-    return redirect(url_for('bingo.index'))
+    return redirect(url_for('index.index'))
