@@ -10,6 +10,6 @@ def login_required(f):
             if current_app.debug is True:
                 return f(*args, **kwargs)
             current_app.logger.info('User not in session, redirecting to login')
-            return redirect(url_for('login'))
+            return redirect(url_for('auth.login'))
         return f(*args, **kwargs)
     return decorated_function
