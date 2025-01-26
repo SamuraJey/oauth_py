@@ -1,3 +1,5 @@
 venv
 logs
 docker-compose.yml
+.venv
+dbdata

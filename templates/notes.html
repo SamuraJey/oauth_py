@@ -10,13 +10,13 @@
     <div class="navbar">
         <span>Logged in as: {{ user['first_name'] }} {{ user['last_name'] }}</span>
         <div>
-            <a href="{{ url_for('index') }}">Home</a>
-            <a href="{{ url_for('life') }}">Game of Life</a>
-            <a href="{{ url_for('logout') }}">Logout</a>
+            <a href="{{ url_for('index.index') }}">Home</a>
+            <a href="{{ url_for('game.life') }}">Game of Life</a>
+            <a href="{{ url_for('auth.logout') }}">Logout</a>
         </div>
     </div>
     <h1>Notes</h1>
-    <form method="POST" action="{{ url_for('notes_view') }}">
+    <form method="POST" action="{{ url_for('notes.notes_view') }}">
         <label for="note">Add a note:</label>
         <textarea id="note" name="note" rows="4" cols="50"></textarea>
         <button type="submit">Add Note</button>
@@ -24,8 +24,16 @@
     <h2>All Notes</h2>
     <ul>
         {% for note in notes %}
-            <li><strong>{{ note.user['first_name'] }} {{ note.user['last_name'] }}:</strong> {{ note.note }}</li>
+            <li><strong>{{ note.user }}:</strong> {{ note.note }}</li>
         {% endfor %}
     </ul>
+    <div>
+        {% if page > 1 %}
+            <a href="{{ url_for('notes.notes_view', page=page-1) }}">Previous</a>
+        {% endif %}
+        {% if page < total_pages %}
+            <a href="{{ url_for('notes.notes_view', page=page+1) }}">Next</a>
+        {% endif %}
+    </div>
 </body>
 </html>

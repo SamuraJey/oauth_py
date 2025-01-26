@@ -1,6 +1,6 @@
 services:
   web:
-    image: ghcr.io/samurajey/oauth_py:main
+    image: ghcr.io/samurajey/oauth_py:pr-2
     container_name: oauth_py
     ports:
       - "127.0.0.1:8080:8080"
@@ -16,8 +16,28 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.30'  # Ограничение по CPU (например, 50% одного CPU)
-          memory: '256M'  # Ограничение по памяти (например, 512 MB)
+          cpus: '0.10'
+          memory: '128M'
         reservations:
-          cpus: '0.05'  # Резервирование CPU (например, 25% одного CPU)
-          memory: '64M'  # Резервирование памяти (например, 256 MB)
+          cpus: '0.05'
+          memory: '32M'
+    depends_on:
+      - couchdb
+
+  couchdb:
+    image: couchdb:3
+    container_name: couchdb-instance
+    ports:
+      - "127.0.0.1:5984:5984"
+    volumes:
+        - ./dbdata:/opt/couchdb/data
+    env_file:
+      - .env
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: '256M'
+        reservations:
+          cpus: '0.05'
+          memory: '32M'
