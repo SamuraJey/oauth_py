@@ -6,3 +6,5 @@ pycouchdb>=1.16.0
 waitress>=3.0.0
 mypy>=1.14
 isort>=5.13
+
+pydantic-settings~=2.7.1

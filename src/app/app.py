@@ -2,10 +2,10 @@ from authlib.integrations.flask_client import OAuth
 from flask import Flask
 from pycouchdb.client import Database
 
-from database import get_db
-from dotenv_load import SiteSettings
-from logger import setup_logger
-from oauth import get_oauth
+from src.app.config.dotenv_load import SiteSettings
+from src.db.database import get_db
+from src.oauth.oauth import get_oauth
+from src.utils.logger import setup_logger
 
 
 class MyFlask(Flask):
@@ -20,14 +20,15 @@ def create_app(settings: SiteSettings) -> MyFlask:
 
     # Configure logging
     logger = setup_logger(app)
-    logger.info('App startup')
+    logger.info("App startup")
 
     # OAuth configuration
     app.oauth = get_oauth(app, settings)
-    app.db = get_db(settings, 'notes')
+    app.db = get_db(settings, "notes")
 
     # Register blueprints
-    from routes import auth, game, index, notes
+    from src.routes import auth, game, index, notes
+
     app.register_blueprint(auth.bp)
     app.register_blueprint(notes.bp)
     app.register_blueprint(game.bp)
@@ -36,12 +37,13 @@ def create_app(settings: SiteSettings) -> MyFlask:
     return app
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     settings = SiteSettings()
     app = create_app(settings)
 
     if app.debug:
-        app.run(port=settings.port, host='0.0.0.0')
+        app.run(port=settings.port, host="0.0.0.0")
     else:
         from waitress import serve
-        serve(app, port=settings.port, host='0.0.0.0', _quiet=False)
+
+        serve(app, port=settings.port, host="0.0.0.0", _quiet=False)
