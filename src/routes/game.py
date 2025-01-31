@@ -1,8 +1,8 @@
 # routes/game.py
-from flask import Blueprint, current_app, jsonify, render_template, session
+from flask import Blueprint, current_app, render_template, session
 
-from constants import DEFAULT_USER
-from decorator import login_required
+from src.app.config.constants import DEFAULT_USER
+from src.utils.decorator import login_required
 
 bp = Blueprint('game', __name__)
 

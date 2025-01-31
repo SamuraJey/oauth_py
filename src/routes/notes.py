@@ -2,8 +2,8 @@
 from flask import (Blueprint, current_app, redirect, render_template, request,
                    session, url_for)
 
-from constants import DEFAULT_USER
-from decorator import login_required
+from src.app.config.constants import DEFAULT_USER
+from src.utils.decorator import login_required
 
 bp = Blueprint('notes', __name__)
 
