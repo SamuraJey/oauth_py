@@ -15,3 +15,7 @@ clean:
 	rm -rf .mypy_cache
 	rm -rf dist
 	rm -rf *.egg-info
+
+make pretty:
+	ruff format
+	ruff check --fix --exit-zero
