@@ -1,8 +1,8 @@
 # routes/notes.py
 from flask import Blueprint, current_app, redirect, render_template, request, session, url_for
 
-from src.app.config.constants import DEFAULT_USER
-from src.utils.decorator import login_required
+from app.config.constants import DEFAULT_USER
+from utils.decorator import login_required
 
 bp = Blueprint("notes", __name__)
 

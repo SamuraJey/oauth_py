@@ -1,6 +1,6 @@
 services:
   web:
-    image: ghcr.io/samurajey/oauth_py:refactoring
+    image: ghcr.io/samurajey/oauth_py:pr-9
     container_name: oauth_py
     ports:
       - "127.0.0.1:8080:8080"
@@ -12,7 +12,7 @@ services:
       - ./web:/var/www/html
       - ./logs:/usr/src/app/logs
     restart: unless-stopped
-    pull_policy: always
+    pull_policy: if_not_present
     deploy:
       resources:
         limits:

@@ -1,7 +1,7 @@
 from flask import Blueprint, current_app, render_template, session
 
-from src.app.config.constants import DEFAULT_USER
-from src.utils.decorator import login_required
+from app.config.constants import DEFAULT_USER
+from utils.decorator import login_required
 
 bp = Blueprint("index", __name__)
 

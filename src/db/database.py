@@ -5,14 +5,15 @@ import pycouchdb
 import requests
 from pycouchdb import exceptions
 
-from src.app.config.dotenv_load import SiteSettings
+from app.config.dotenv_load import SiteSettings
 
 
 def get_url(settings: SiteSettings) -> str:
-    login = settings.couchdb_user
-    password = settings.couchdb_password
+    login = settings.couchdb_user.get_secret_value()
+    password = settings.couchdb_password.get_secret_value()
     url = settings.couchdb_url
     port = settings.couchdb_port
+
     return f"http://{login}:{password}@{url}:{port}"
 
 
@@ -28,7 +29,7 @@ def add_design_document(settings: SiteSettings, db_name: str) -> None:
         "_id": "_design/notes",
         "views": {
             "all_notes": {
-                "map": "function(doc) { if (doc.user && doc.note) { emit(doc._id, {'user':doc.user, 'note':doc.note}); } }",
+                "map": "function(doc) { if (doc.user && doc.note) { emit(doc._id, {'user':doc.user, 'note':doc.note}); } }", # noqa
                 "reduce": "_count",
             }
         },

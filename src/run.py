@@ -2,10 +2,10 @@ from authlib.integrations.flask_client import OAuth
 from flask import Flask
 from pycouchdb.client import Database
 
-from src.app.config.dotenv_load import SiteSettings
-from src.db.database import get_db
-from src.oauth.oauth import get_oauth
-from src.utils.logger import setup_logger
+from app.config.dotenv_load import SiteSettings
+from db.database import get_db
+from oauth.oauth import get_oauth
+from utils.logger import setup_logger
 
 
 class MyFlask(Flask):
@@ -15,19 +15,16 @@ class MyFlask(Flask):
 
 def create_app(settings: SiteSettings) -> MyFlask:
     app = MyFlask(__name__)
-    app.secret_key = settings.flask_secret_key
+    app.secret_key = settings.flask_secret_key.get_secret_value()
     app.debug = settings.debug
 
-    # Configure logging
     logger = setup_logger(app)
     logger.info("App startup")
 
-    # OAuth configuration
     app.oauth = get_oauth(app, settings)
     app.db = get_db(settings, "notes")
 
-    # Register blueprints
-    from src.routes import auth, game, index, notes
+    from routes import auth, game, index, notes
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(notes.bp)
@@ -39,6 +36,7 @@ def create_app(settings: SiteSettings) -> MyFlask:
 
 if __name__ == "__main__":
     settings = SiteSettings()
+    print(settings.model_dump())
     app = create_app(settings)
 
     if app.debug:

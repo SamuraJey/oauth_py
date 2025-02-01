@@ -1,9 +1,9 @@
 FROM python:3.13-slim
-WORKDIR /usr/src/app
+WORKDIR /usr/
 COPY . .
 
-RUN pip install poetry && \
+RUN pip install poetry --no-cache-dir && \
 	poetry install
 
 EXPOSE 8080
-CMD ["poetry", "run", "python", "app.py"]
+CMD ["poetry", "run", "python", "src/run.py"]

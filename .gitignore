@@ -183,3 +183,4 @@ cython_debug/
 tmp*
 
 .ruff_cache
+*.env.*
