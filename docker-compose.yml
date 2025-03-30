@@ -1,9 +1,10 @@
 services:
   web:
+    container_name: oauth_py
+    image: ${DOCKER_IMAGE:-ghcr.io/samurajey/oauth_py:main}
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: oauth_py
     command: poetry run python src/run.py
     ports:
       - "127.0.0.1:8080:8080"
@@ -13,22 +14,15 @@ services:
       - 1.1.1.1
     environment:
       - ENV_VAR_NAME=value
+      - LOOK_FOR_DOT_ENV=anything
       - DOTENV_NAME=.env
     env_file:
       - .env
     volumes:
+      - ./.env:/usr/.env
       - ./web:/var/www/html
       - ./logs:/usr/src/app/logs
     restart: unless-stopped
-    pull_policy: if_not_present
-    deploy:
-      resources:
-        limits:
-          cpus: '0.10'
-          memory: '128M'
-        reservations:
-          cpus: '0.05'
-          memory: '32M'
     depends_on:
       - couchdb
 
@@ -38,7 +32,7 @@ services:
     ports:
       - "127.0.0.1:5984:5984"
     volumes:
-        - ./dbdata:/opt/couchdb/data
+      - ./dbdata:/opt/couchdb/data
     env_file:
       - .env
     deploy:
@@ -47,5 +41,5 @@ services:
           cpus: '0.25'
           memory: '256M'
         reservations:
-          cpus: '0.05'
-          memory: '32M'
+          cpus: '0.1'
+          memory: '64M'
