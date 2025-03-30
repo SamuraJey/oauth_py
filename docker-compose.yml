@@ -13,9 +13,9 @@ services:
       - 1.1.1.1
     environment:
       - ENV_VAR_NAME=value
-      - DOTENV_NAME=.env.dev
+      - DOTENV_NAME=.env
     env_file:
-      - .env.dev
+      - .env
     volumes:
       - ./web:/var/www/html
       - ./logs:/usr/src/app/logs
