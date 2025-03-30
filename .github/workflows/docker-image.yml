@@ -1,4 +1,4 @@
-name: Build and Push Docker Image, then Deploy to my server
+name: Build, Test, Push Docker Image and Deploy
 
 on:
   push:
@@ -7,6 +7,13 @@ on:
   pull_request:
     branches:
       - '*'
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: 'Deploy to production'
+        required: true
+        type: boolean
+        default: false
 
 env:
   REGISTRY: ghcr.io
@@ -17,10 +24,36 @@ env:
   DOT_ENV: ${{ secrets.DOT_ENV }}
 
 jobs:
-  build:
-    name: Build
+  build-and-test:
+    name: Build and Test
     runs-on: ubuntu-latest
 
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          load: true
+          tags: ${{ env.IMAGE_NAME }}:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Run tests in container
+        run: |
+          docker run --rm ${{ env.IMAGE_NAME }}:test poetry run pytest src/tests/ -v
+
+  push:
+    name: Push to Registry
+    runs-on: ubuntu-latest
+    needs: [build-and-test]
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -45,12 +78,15 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    needs: [build]
-    if: github.ref == 'refs/heads/main'
+    needs: [push]
+    # Деплоим только если это main ветка и запущено вручную с параметром deploy=true
+    if: github.ref == 'refs/heads/main' && (inputs.deploy == true || github.event_name == 'workflow_dispatch' && github.event.inputs.deploy == 'true')
 
     steps:
       - uses: actions/checkout@v4
@@ -63,7 +99,7 @@ jobs:
         run: echo "${{ env.DOT_ENV }}" | base64 --decode > .env
       - name: copy dotenv file
         run: scp -i ~/.ssh/id_ed25519 -P ${{ env.PORT }} .env ${{ env.SSH_USER }}@${{ env.HOST }}:.env
-      - name: copy dotenv file
+      - name: copy docker-compose file
         run: scp -i ~/.ssh/id_ed25519 -P ${{ env.PORT }} docker-compose.yml ${{ env.SSH_USER }}@${{ env.HOST }}:docker-compose.yml
       - name: connect and pull
         run: ssh -i ~/.ssh/id_ed25519 ${{ env.SSH_USER }}@${{ env.HOST }} -p ${{ env.PORT }} "docker compose pull && docker compose up -d && exit"

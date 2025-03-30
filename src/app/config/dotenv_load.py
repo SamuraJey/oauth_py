@@ -1,8 +1,12 @@
 from dotenv import find_dotenv, load_dotenv
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
+import os
 
-DOTENV = find_dotenv(filename=".env", usecwd=True, raise_error_if_not_found=True)
+dotenv_name = os.getenv("DOTENV_NAME", ".env")
+print(f"Loading dotenv file: {dotenv_name}")
+
+DOTENV = find_dotenv(filename=dotenv_name, usecwd=True, raise_error_if_not_found=True)
 load_dotenv(DOTENV, override=True)
 
 

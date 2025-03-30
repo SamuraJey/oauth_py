@@ -1,13 +1,21 @@
 services:
   web:
-    image: ghcr.io/samurajey/oauth_py:pr-9
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: oauth_py
+    command: poetry run python src/run.py
     ports:
       - "127.0.0.1:8080:8080"
+    dns:
+      - 8.8.8.8
+      - 8.4.4.8
+      - 1.1.1.1
     environment:
       - ENV_VAR_NAME=value
+      - DOTENV_NAME=.env.dev
     env_file:
-      - .env
+      - .env.dev
     volumes:
       - ./web:/var/www/html
       - ./logs:/usr/src/app/logs
