@@ -14,10 +14,12 @@ services:
       - 1.1.1.1
     environment:
       - ENV_VAR_NAME=value
+      - LOOK_FOR_DOT_ENV=anything
       - DOTENV_NAME=.env
     env_file:
       - .env
     volumes:
+      - ./.env:/usr/.env
       - ./web:/var/www/html
       - ./logs:/usr/src/app/logs
     restart: unless-stopped

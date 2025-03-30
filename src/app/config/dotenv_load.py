@@ -5,10 +5,13 @@ from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 dotenv_name = os.getenv("DOTENV_NAME", ".env")
-print(f"Loading dotenv file: {dotenv_name}")
+look_for_dot_env = os.getenv("LOOK_FOR_DOT_ENV", None)
+if look_for_dot_env:
+    print(f"Looking for dotenv file")
+    DOTENV = find_dotenv(filename=dotenv_name, usecwd=True, raise_error_if_not_found=False)
+    load_dotenv(DOTENV, override=False)
 
-DOTENV = find_dotenv(filename=dotenv_name, usecwd=True, raise_error_if_not_found=True)
-load_dotenv(DOTENV, override=True)
+# print(f"Loading dotenv file: {dotenv_name}")
 
 
 class SiteSettings(BaseSettings):
