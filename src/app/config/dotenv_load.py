@@ -6,6 +6,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 dotenv_name = os.getenv("DOTENV_NAME", ".env")
 look_for_dot_env = os.getenv("LOOK_FOR_DOT_ENV", None)
+DOTENV = None
 if look_for_dot_env:
     print(f"Looking for dotenv file")
     DOTENV = find_dotenv(filename=dotenv_name, usecwd=True, raise_error_if_not_found=False)

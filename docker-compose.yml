@@ -1,10 +1,10 @@
 services:
   web:
-    image: ${DOCKER_IMAGE:-ghcr.io/SamuraJ/oauth_py:main}
+    container_name: oauth_py
+    image: ${DOCKER_IMAGE:-ghcr.io/samurajey/oauth_py:main}
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: oauth_py
     command: poetry run python src/run.py
     ports:
       - "127.0.0.1:8080:8080"
