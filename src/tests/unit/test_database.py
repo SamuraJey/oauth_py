@@ -1,7 +1,9 @@
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 import pytest
-from src.db.database import add_design_document
+
 from src.app.config.dotenv_load import SiteSettings
+from src.db.database import add_design_document
 
 
 @pytest.fixture
@@ -17,7 +19,7 @@ def mock_settings():
 
 
 class TestAddDesignDocument:
-    @patch('requests.put')
+    @patch("requests.put")
     def test_add_design_document_success(self, mock_put, mock_settings):
         mock_response = MagicMock()
         mock_response.status_code = 201
@@ -27,7 +29,7 @@ class TestAddDesignDocument:
 
         mock_put.assert_called_once()
 
-    @patch('requests.put')
+    @patch("requests.put")
     def test_add_design_document_already_exists(self, mock_put, mock_settings):
         mock_response = MagicMock()
         mock_response.status_code = 409
@@ -37,7 +39,7 @@ class TestAddDesignDocument:
 
         mock_put.assert_called_once()
 
-    @patch('requests.put')
+    @patch("requests.put")
     def test_add_design_document_failure(self, mock_put, mock_settings):
         mock_response = MagicMock()
         mock_response.status_code = 500

@@ -18,12 +18,8 @@ def authorize():
 
 @bp.route("/auth")
 def auth():
-    token = current_app.oauth.vk.authorize_access_token(
-        client_id=current_app.oauth.vk.client_id, client_secret=current_app.oauth.vk.client_secret
-    )
-    user = current_app.oauth.vk.get(
-        "https://api.vk.com/method/users.get", params={"access_token": token["access_token"], "v": "5.131"}
-    ).json()
+    token = current_app.oauth.vk.authorize_access_token(client_id=current_app.oauth.vk.client_id, client_secret=current_app.oauth.vk.client_secret)
+    user = current_app.oauth.vk.get("https://api.vk.com/method/users.get", params={"access_token": token["access_token"], "v": "5.131"}).json()
     session["user"] = user["response"][0]
     current_app.logger.info("User authenticated: %s", user["response"][0])
     return redirect(url_for("index.index"))

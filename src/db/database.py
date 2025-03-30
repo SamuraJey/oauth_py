@@ -29,7 +29,7 @@ def add_design_document(settings: SiteSettings, db_name: str) -> None:
         "_id": "_design/notes",
         "views": {
             "all_notes": {
-                "map": "function(doc) { if (doc.user && doc.note) { emit(doc._id, {'user':doc.user, 'note':doc.note}); } }", # noqa
+                "map": "function(doc) { if (doc.user && doc.note) { emit(doc._id, {'user':doc.user, 'note':doc.note}); } }",  # noqa
                 "reduce": "_count",
             }
         },

@@ -1,7 +1,8 @@
+import os
+
 from dotenv import find_dotenv, load_dotenv
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
-import os
 
 dotenv_name = os.getenv("DOTENV_NAME", ".env")
 print(f"Loading dotenv file: {dotenv_name}")
