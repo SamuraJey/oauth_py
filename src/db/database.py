@@ -24,7 +24,7 @@ def get_url(settings: SiteSettings) -> str:
 
 def add_design_document(settings: SiteSettings, db_name: str) -> None:
     base_url = get_url(settings)
-    # db_name = 'notes'
+    # db_name - notes
     design_doc = {
         "_id": "_design/notes",
         "views": {
@@ -40,12 +40,13 @@ def add_design_document(settings: SiteSettings, db_name: str) -> None:
 
     response = requests.put(url, headers=headers, data=json.dumps(design_doc))
 
+    # TODO make it in logger
     if response.status_code in (201, 202):
-        print("Design document added successfully.")
+        print("Design document added successfully.")  # noqa
     elif response.status_code == 409 or response.status_code == 412:
-        print("Design document already exists.")
+        print("Design document already exists.")  # noqa
     else:
-        print(f"Failed to add design document: {response.status_code} - {response.text}")
+        print(f"Failed to add design document: {response.status_code} - {response.text}")  # noqa
 
 
 def create_system_dbs(settings: SiteSettings) -> None:
@@ -54,12 +55,12 @@ def create_system_dbs(settings: SiteSettings) -> None:
 
     for db in system_dbs:
         response = requests.put(f"{base_url}/{db}")
-        if response.status_code in (201, 202):
-            print(f"Created system database {db}")
+        if response.status_code in (201, 202):  # TODO make it in logger
+            print(f"Created system database {db}")  # noqa
         elif response.status_code == 412:
-            print(f"System database {db} already exists")
+            print(f"System database {db} already exists")  # noqa
         else:
-            print(f"Failed to create system database {db}: {response.status_code}")
+            print(f"Failed to create system database {db}: {response.status_code}")  # noqa
 
 
 def get_db(settings: SiteSettings, database_name: str) -> pycouchdb.client.Database:

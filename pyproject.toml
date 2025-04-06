@@ -2,9 +2,7 @@
 name = "oauth-py"
 version = "0.1.0"
 description = ""
-authors = [
-    {name = "SamuraJ",email = "cergeypro703@gmail.com"}
-]
+authors = [{ name = "SamuraJ", email = "cergeypro703@gmail.com" }]
 readme = "README.md"
 requires-python = ">=3.13, <4"
 dependencies = [
@@ -38,6 +36,7 @@ warn_unused_configs = true
 plugins = "pydantic.mypy"
 follow_untyped_imports = true
 ignore_missing_imports = true
+warn_unreachable = true
 
 
 [tool.ruff]
@@ -68,7 +67,7 @@ exclude = [
     "node_modules",
     "site-packages",
     "venv",
-    "logs"
+    "logs",
 ]
 
 line-length = 180
@@ -76,19 +75,24 @@ indent-width = 4
 target-version = "py313"
 
 [tool.ruff.lint]
+
+# E - pycodestyle F - Pyflakes UP - pyupgrade B - flake8-bugbear SIM - flake8-simplify I - isort
+# N - flake8-annotations A - flake8-annotations T20 - flake8-tidy-imports ERA - flake8-eradicate
+# C4 - flake8-comprehensions TID - flake8-tidy-imports PERF - flake8-perf
 select = [
-    # pycodestyle
     "E",
-    # Pyflakes
     "F",
-    # pyupgrade
     "UP",
-    # flake8-bugbear
     "B",
-    # flake8-simplify
     "SIM",
-    # isort
     "I",
+    "N",
+    "A",
+    "T20",
+    "ERA",
+    "C4",
+    "TID",
+    "PERF",
 ]
 ignore = ["SIM108"]
 
@@ -98,6 +102,9 @@ unfixable = []
 
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.isort]
+split-on-trailing-comma = false
 
 [tool.ruff.format]
 # Like Black, use double quotes for strings.
@@ -112,9 +119,8 @@ skip-magic-trailing-comma = false
 # Like Black, automatically detect the appropriate line ending.
 line-ending = "auto"
 
+docstring-code-format = false
 
 [tool.pytest.ini_options]
 pythonpath = "src"
-addopts = [
-    "--import-mode=importlib",
-]
+addopts = ["--import-mode=importlib"]

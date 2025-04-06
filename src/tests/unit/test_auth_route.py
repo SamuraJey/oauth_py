@@ -70,73 +70,68 @@ class TestAuthRoutes:
 
     def test_auth(self, client, app):
         """Test the /auth route."""
-        with app.test_request_context("/auth"):  # Ensure a request context is active
-            with (
-                requests_mock.Mocker() as m,
-                patch("src.routes.auth.session", create=True) as mock_session,
-                patch("src.routes.auth.redirect") as mock_redirect,
-                patch("src.routes.auth.url_for") as mock_url_for,
-            ):
-                # Mock the access token response
-                app.oauth.vk.authorize_access_token.return_value = {"access_token": "test_token"}
 
-                # Mock the VK API response
-                m.get(
-                    "https://api.vk.com/method/users.get?access_token=test_token&v=5.131",
-                    json={"response": [{"id": 123, "name": "Test User"}]},
-                )
+        with (
+            app.test_request_context("/auth"),
+            requests_mock.Mocker() as m,
+            patch("src.routes.auth.session", create=True),
+            patch("src.routes.auth.redirect") as mock_redirect,
+            patch("src.routes.auth.url_for") as mock_url_for,
+        ):
+            app.oauth.vk.authorize_access_token.return_value = {"access_token": "test_token"}
 
-                # Mock url_for and redirect
-                mock_url_for.return_value = "/index"
-                mock_redirect.return_value = "redirected_to_index"
+            m.get(
+                "https://api.vk.com/method/users.get?access_token=test_token&v=5.131",
+                json={"response": [{"id": 123, "name": "Test User"}]},
+            )
 
-                # Call the /auth route
-                response = client.get("/auth")
+            # Mock url_for and redirect
+            mock_url_for.return_value = "/index"
+            mock_redirect.return_value = "redirected_to_index"
 
-                # Assert the response status code
-                # assert response.status_code == 302
+            # Call the /auth route
+            client.get("/auth")
 
-                # Assert that the access token was retrieved
-                app.oauth.vk.authorize_access_token.assert_called_once_with(client_id="test_client_id", client_secret="test_client_secret")
+            # Assert the response status code
+            # assert response.status_code == 302 TODO # noqa
 
-                # Assert that the VK API was called with the correct parameters
-                app.oauth.vk.get.assert_called_once_with("https://api.vk.com/method/users.get", params={"access_token": "test_token", "v": "5.131"})
+            # Assert that the access token was retrieved
+            app.oauth.vk.authorize_access_token.assert_called_once_with(client_id="test_client_id", client_secret="test_client_secret")
 
-                # Assert that the user was added to the session
-                # mock_session.__setitem__.assert_called_once_with("user", {"id": 123, "name": "Test User"})
+            # Assert that the VK API was called with the correct parameters
+            app.oauth.vk.get.assert_called_once_with("https://api.vk.com/method/users.get", params={"access_token": "test_token", "v": "5.131"})
 
-                # Assert that the redirect was called with the correct URL
-                mock_redirect.assert_called_once_with("/index")
+            # Assert that the user was added to the session
 
-                # Assert that the logger was called
-                # app.logger.info.assert_called_once_with("User authenticated: %s", {"id": 123, "name": "Test User"})
+            # Assert that the redirect was called with the correct URL
+            mock_redirect.assert_called_once_with("/index")
 
     def test_logout(self, client, app):
         """Test the /logout route."""
-        with app.test_request_context("/logout"):
-            with (
-                patch("src.routes.auth.session") as mock_session,
-                patch("src.routes.auth.redirect") as mock_redirect,
-                patch("src.routes.auth.url_for") as mock_url_for,
-            ):
-                # Mock session and redirect
-                mock_session.pop.return_value = {"id": 123, "name": "Test User"}
-                mock_url_for.return_value = "/index"
+        with (
+            app.test_request_context("/logout"),
+            patch("src.routes.auth.session") as mock_session,
+            patch("src.routes.auth.redirect") as mock_redirect,
+            patch("src.routes.auth.url_for") as mock_url_for,
+        ):
+            # Mock session and redirect
+            mock_session.pop.return_value = {"id": 123, "name": "Test User"}
+            mock_url_for.return_value = "/index"
 
-                # Make redirect return a proper 302 response
-                mock_redirect.side_effect = lambda x: app.response_class(response="", status=302, headers={"Location": x})
+            # Make redirect return a proper 302 response
+            mock_redirect.side_effect = lambda x: app.response_class(response="", status=302, headers={"Location": x})
 
-                # Call the /logout route
-                response = client.get("/logout")
+            # Call the /logout route
+            response = client.get("/logout")
 
-                # Assert the response status code
-                assert response.status_code == 302
+            # Assert the response status code
+            assert response.status_code == 302
 
-                # Verify redirected to correct URL
-                assert response.headers["Location"] == "/index"
+            # Verify redirected to correct URL
+            assert response.headers["Location"] == "/index"
 
-                # Assert that the user was removed from the session
-                mock_session.pop.assert_called_once_with("user", None)
+            # Assert that the user was removed from the session
+            mock_session.pop.assert_called_once_with("user", None)
 
-                # Assert that the redirect was called with the correct URL
-                mock_redirect.assert_called_once_with("/index")
+            # Assert that the redirect was called with the correct URL
+            mock_redirect.assert_called_once_with("/index")

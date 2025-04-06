@@ -39,6 +39,7 @@ mypy:
 	$(VENV)/bin/mypy --install-types --non-interactive .
 
 .ruff-lint:
-	
+	$(VENV)/bin/ruff check .
 
-lint: mypy
+
+lint: mypy .ruff-lint

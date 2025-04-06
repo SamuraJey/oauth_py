@@ -15,7 +15,6 @@ def get_oauth(app: Flask, settings: SiteSettings) -> OAuth:
         access_token_url="https://oauth.vk.com/access_token",
         access_token_params=None,
         refresh_token_url=None,  # Refresh token is not implemented
-        # redirect_uri='http://localhost:8080/auth/',
         redirect_uri=settings.redirect_uri.get_secret_value(),
         client_kwargs={"scope": "email"},
     )
