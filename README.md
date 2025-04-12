@@ -1,4 +1,4 @@
-Collecting workspace information# OAuth-Py
+# OAuth-Py
 
 ## Overview
 
