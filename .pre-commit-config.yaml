@@ -1,0 +1,30 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-docstring-first
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.4
+    hooks:
+      - id: ruff
+        language: python
+        language_version: "3.13"
+        args: [--fix]
+      - id: ruff-format
+        language: python
+
+  - repo: local
+    hooks:
+      - id: mypy
+        entry: .venv/bin/mypy
+        name: mypy
+        language: python
+        language_version: "3.13"
+        args: ["--install-types", "--non-interactive","--ignore-missing-imports"]
+        types: [python, pyi]
+        exclude: |
+          ^(tests|docs|examples)/.*$|
+          conftest\.py$

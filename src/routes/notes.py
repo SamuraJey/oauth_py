@@ -10,7 +10,7 @@ bp = Blueprint("notes", __name__)
 @bp.route("/notes", methods=["GET", "POST"])
 @login_required
 def notes_view():
-    user = session["user"] if "user" in session else DEFAULT_USER
+    user = session.get("user", DEFAULT_USER)
     if request.method == "POST":
         note = request.form["note"]
         current_app.db.save({"user": f"{user.get('first_name', '')} {user.get('last_name', '')}", "note": note})

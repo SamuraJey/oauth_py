@@ -8,11 +8,9 @@ dotenv_name = os.getenv("DOTENV_NAME", ".env")
 look_for_dot_env = os.getenv("LOOK_FOR_DOT_ENV", None)
 DOTENV = None
 if look_for_dot_env:
-    print(f"Looking for dotenv file")
+    print("Looking for dotenv file")  # noqa
     DOTENV = find_dotenv(filename=dotenv_name, usecwd=True, raise_error_if_not_found=False)
     load_dotenv(DOTENV, override=False)
-
-# print(f"Loading dotenv file: {dotenv_name}")
 
 
 class SiteSettings(BaseSettings):

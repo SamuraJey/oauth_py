@@ -36,7 +36,7 @@ def create_app(settings: SiteSettings) -> MyFlask:
 
 if __name__ == "__main__":
     settings = SiteSettings()
-    print(settings.model_dump())
+    print(settings.model_dump())  # noqa TODO Make logger
     app = create_app(settings)
 
     if app.debug:
